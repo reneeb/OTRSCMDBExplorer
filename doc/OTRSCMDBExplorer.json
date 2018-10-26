@@ -1,0 +1,39 @@
+{
+    "name": "OTRSCMDBExplorer",
+    "version": "5.0.1",
+    "framework": [
+        "5.0.x"
+    ],
+    "vendor": {
+        "name": "Perl-Services.de",
+        "url": "http://www.perl-services.de"
+    },
+    "license": "GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007",
+    "description" : {
+        "en": "A graphical CMDB explorer.",
+        "de": "Ein graphischer CMDB-Explorer."
+    },
+    "requires" : {
+        "package" : {
+            "ITSMConfigurationManagement" : "5.0.1"
+        },
+        "module" : {
+            "GraphViz" : "2.04"
+        }
+    },
+    "changes_file" : "OTRSCMDBExplorer.changes",
+    "intro" : [
+        {
+            "type": "Install",
+            "time": "pre",
+            "version": 0,
+            "lang": "en",
+            "title": "CMDBExplorer dependency notice",
+            "text": "Please note that the CMDBExplorer AddOn require graphviz to be installed on your system."
+        }
+    ],
+    "exclude_files" : [
+        "doc/OTRSCMDBExplorer.changes",
+        "doc/OTRSCMDBExplorer.json"
+    ]
+}
