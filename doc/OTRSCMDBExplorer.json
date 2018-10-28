@@ -1,8 +1,8 @@
 {
     "name": "OTRSCMDBExplorer",
-    "version": "5.0.1",
+    "version": "6.0.1",
     "framework": [
-        "5.0.x"
+        "6.0.x"
     ],
     "vendor": {
         "name": "Perl-Services.de",
@@ -15,7 +15,7 @@
     },
     "requires" : {
         "package" : {
-            "ITSMConfigurationManagement" : "5.0.1"
+            "ITSMConfigurationManagement" : "6.0.1"
         },
         "module" : {
             "GraphViz" : "2.04"
@@ -34,6 +34,7 @@
     ],
     "exclude_files" : [
         "doc/OTRSCMDBExplorer.changes",
-        "doc/OTRSCMDBExplorer.json"
+        "doc/OTRSCMDBExplorer.json",
+        "README.md"
     ]
 }

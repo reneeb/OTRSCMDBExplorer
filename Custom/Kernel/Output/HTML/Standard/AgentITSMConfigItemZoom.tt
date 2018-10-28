@@ -1,6 +1,5 @@
 # --
-# AgentITSMConfigItemZoom.tt - provides HTML form for AgentITSMConfigItemZoom
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -102,7 +101,7 @@
 [% RenderBlockStart("Menu") %]
 [% RenderBlockStart("MenuItem") %]
                     <li>
-                        <a href="[% Env("Baselink") %][% Data.Link | Interpolate %]" class="[% Data.MenuClass | html %]" title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
+                        <a href="[% Env("Baselink") %][% Data.Link | Interpolate %]" id="Menu[% Data.MenuID | html %]" class="[% Data.MenuClass | html %]" title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
                     </li>
 [% RenderBlockEnd("MenuItem") %]
 [% RenderBlockEnd("Menu") %]
@@ -221,7 +220,7 @@
                                         <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=DownloadAttachment;Filename=[% Data.Filename | uri %];ConfigItemID=[% Data.ConfigItemID | uri %]">
                                             [% Data.Filename | html %]
                                         </a>
-                                        ([% Data.Filesize | html %])
+                                        ([% Data.Filesize | Localize('Filesize') | html %])
                                     </td>
                                 </tr>
 [% RenderBlockEnd("Attachments") %]
@@ -233,7 +232,7 @@
                                         <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=DownloadAttachment;Filename=[% Data.Filename | uri %];ConfigItemID=[% Data.ConfigItemID | uri %]">
                                             [% Data.Filename | html %]
                                         </a>
-                                        ([% Data.Filesize | html %])
+                                        ([% Data.Filesize | Localize('Filesize') | html %])
                                     </td>
                                 </tr>
 [% RenderBlockEnd("AttachmentRow") %]
@@ -247,6 +246,9 @@
                 [% Data.LinkTableStrg %]
             </div>
 [% RenderBlockEnd("LinkTableComplex") %]
+# ---
+# PS
+# ---
             <div class="Content SpacingTop">
                 <div class="ControlRow">
                     <h2>CMDB explorer</h2>
@@ -288,33 +290,8 @@
                 </div>
             </div>
 [% RenderBlockEnd("LinkGraph") %]
+# ---
         </div>
         <div class="Clear"></div>
     </div>
 </div>
-
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-/*global ITSM: true */
-    ITSM.Agent.Zoom.Init([% Env("UserConfigItemZoomTableHeight") %]);
-
-    $('ul.Actions a.AsPopup').bind('click', function (Event) {
-        Core.UI.Popup.OpenPopup($(this).attr('href'), 'Action');
-        return false;
-    });
-
-    $('ul.Actions a.HistoryBack').bind('click', function (Event) {
-        history.back();
-        return false;
-    });
-
-    $('.MasterAction').bind('click', function (Event) {
-        var $MasterActionLink = $(this).find('.MasterActionLink');
-        // only act if the link was not clicked directly
-        if (Event.target !== $MasterActionLink.get(0)) {
-            window.location = $MasterActionLink.attr('href');
-            return false;
-        }
-    });
-//]]></script>
-[% END %]

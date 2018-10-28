@@ -1,8 +1,6 @@
 # --
-# Kernel/System/CMDBExplorer/Scope.pm
+# Copyright (C) 2018- Perl-Services.de, http://perl-services.de
 # Copyright (C) 2011-2014 Thales Austria GmbH, http://www.thalesgroup.com/
-# --
-# $Id: Scope.pm $
 # --
 # This software comes with ABSOLUTELY NO WARRANTY and WITHOUT ANY SUPPORT. 
 # For license information, see the enclosed file COPYING-CMDBExplorer
@@ -29,8 +27,7 @@ from other CIs through directed in-links.
 use strict;
 use warnings;
 
-use vars qw($VERSION);
-$VERSION = '0.8';
+our @ObjectDependencies = qw();
 
 =head1 PUBLIC INTERFACE
 
@@ -38,19 +35,16 @@ $VERSION = '0.8';
 
 =cut
 
-
-
 ########################################################################
 #
 
 =item new()
 
-    $ScopeObject = Kernel::System::CMDBExplorer::Scope->new();
+    $ScopeObject = $Kernel::OM->Get('Kernel::System::CMDBExplorer::Scope');
 
 =cut
 
-sub new
-{
+sub new {
     my ($Class, %Param) = @_;
 
     my $Self = { };
@@ -58,14 +52,12 @@ sub new
 
     $Self->{ExplicitScopeIDs}  = { }; 
     $Self->{InheritedScopeIDs} = { };
-    $Self->{Signature} = undef;
+    $Self->{Signature}         = undef;
 
     return $Self;
-} # new()
-#
-########################################################################
-
+}
 
+########################################################################
 ########################################################################
 #
 
@@ -83,17 +75,19 @@ Returns 1 if ID was added/moved, 0 if unchanged, undef on error.
 
 sub AddExplicitScopeID {
     my ( $Self, %Param ) = @_;
+
     my $ID = $Param{ID};
-    return undef unless $ID;
+
+    return if !$ID;
     return 0 if exists $Self->{ExplicitScopeIDs}->{$ID}; # already there
-    delete $Self->{InheritedScopeIDs}->{$ID}
-   			 if exists $Self->{InheritedScopeIDs}->{$ID};
+
+    delete $Self->{InheritedScopeIDs}->{$ID};
+
     $Self->{ExplicitScopeIDs}->{$ID}++;
-    undef $Self->{Signature};	# clear cache
+    undef $Self->{Signature};    # clear cache
+
     return 1;
-} # AddExplicitScopeID()
-
-
+}
 
 =item InheritScope()
 
@@ -108,21 +102,26 @@ Returns number of IDs added, undef on error.
 
 sub InheritScope {
     my ( $Self, %Param ) = @_;
-    return undef unless ($Param{Scope} && ref $Param{Scope});
-    my $Added = 0;
-    for my $ID ( $Param{Scope}->GetAllScopeIDs ) {
-	next if $Self->{ExplicitScopeIDs}->{$ID};
-	next if $Self->{InheritedScopeIDs}->{$ID};
-	$Self->{InheritedScopeIDs}->{$ID}++;
-	$Added++;
-    } #for
-    undef $Self->{Signature} if $Added;		# clear cache
-    return $Added;
-} # InheritScope()
-#
-########################################################################
-
 
+    return unless ($Param{Scope} && ref $Param{Scope});
+
+    my $Added = 0;
+
+    ID:
+    for my $ID ( $Param{Scope}->GetAllScopeIDs ) {
+        next ID if $Self->{ExplicitScopeIDs}->{$ID};
+        next ID if $Self->{InheritedScopeIDs}->{$ID};
+
+        $Self->{InheritedScopeIDs}->{$ID}++;
+        $Added++;
+    }
+
+    undef $Self->{Signature} if $Added;        # clear cache
+
+    return $Added;
+}
+
+########################################################################
 ########################################################################
 #
 
@@ -138,25 +137,23 @@ sub GetExplicitScopeIDs {
     return wantarray ? @IDs : scalar(@IDs);
 }
 
-
-
 sub GetInheritedScopeIDs {
     my @IDs = keys %{$_[0]->{InheritedScopeIDs}};
     return wantarray ? @IDs : scalar(@IDs);
 }
 
-
-
 sub GetAllScopeIDs {
     my $Self = shift;
-    my @IDs= ( keys %{$Self->{ExplicitScopeIDs}}, 
-	       keys %{$Self->{InheritedScopeIDs}} );
+
+    my @IDs = (
+        keys %{$Self->{ExplicitScopeIDs}}, 
+        keys %{$Self->{InheritedScopeIDs}},
+    );
+
     return wantarray ? @IDs : scalar(@IDs);
 }
-#
-########################################################################
-
 
+########################################################################
 ########################################################################
 #
 
@@ -170,13 +167,13 @@ Useful to identify scopes for clustering.
 
 sub GetAllScopeIDsList {
     my $Self = shift;
-    my $Signature = $Self->{Signature};	# load cache
+
+    my $Signature = $Self->{Signature};    # load cache
     return $Signature if defined $Signature;
-    $Signature = join( '-', sort $Self->GetAllScopeIDs );
-    $Self->{Signature} = $Signature;	# (return value)
-} # GetAllScopeIDsList()
 
-
+    $Signature         = join '-', sort $Self->GetAllScopeIDs;
+    $Self->{Signature} = $Signature;    # (return value)
+}
 
 =item ToString()
 
@@ -186,11 +183,13 @@ Returns a string that represents the contents of the scope object.
 
 sub ToString {
     my $Self = shift;
+
     my $S1 = join( ',', sort $Self->GetExplicitScopeIDs  ) || '-';
     my $S2 = join( ',', sort $Self->GetInheritedScopeIDs ) || '-';
+
     return "$S1;$S2";
-} # ToString()
-#
+}
+
 #########################################################################
 1;
 
@@ -198,6 +197,7 @@ sub ToString {
 
 =head1 TERMS AND CONDITIONS
 
+Copyright (C) 2018- Perl-Services.de, http://perl-services.de
 Copyright (C) 2011-2014 Thales Austria GmbH, http://www.thalesgroup.com/
 
 This software comes with ABSOLUTELY NO WARRANTY and WITHOUT ANY SUPPORT. 
@@ -210,6 +210,7 @@ http://www.gnu.org/licenses/agpl-3.0.html.
 
 =head1 AUTHOR
 
+info@perl-services.de
 dietmar.berg@thalesgroup.com
 
 =cut

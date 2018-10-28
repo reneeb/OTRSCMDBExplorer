@@ -1,8 +1,5 @@
 # --
-# AgentITSMServiceZoom.tt - provides HTML form for AgentITSMServiceZoom
-# Copyright (C) 2001-2012 OTRS AG, http://otrs.org/
-# --
-# $Id: AgentITSMServiceZoom.dtl,v 1.18 2012/01/27 09:59:51 mb Exp $
+# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -23,6 +20,9 @@
         <div class="SidebarColumn">
             <div class="WidgetSimple">
                 <div class="Header">
+                    <div class="WidgetAction Toggle">
+                        <a href="#" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
+                    </div>
                     <h2>[% Translate("Service Information") | html %]</h2>
                 </div>
                 <div class="Content">
@@ -43,7 +43,7 @@
 
                         <label>[% Translate("Created by") | html %]:</label>
                         <p class="Value">
-                            [% Data.CreateUserFirstname | html %] [% Data.CreateUserLastname | html %]
+                            [% Data.CreateByName | html %]
                         </p>
                         <div class="Clear"></div>
 
@@ -55,7 +55,7 @@
 
                         <label>[% Translate("Last changed by") | html %]:</label>
                         <p class="Value">
-                            [% Data.ChangeUserFirstname | html %] [% Data.ChangeUserLastname %]
+                            [% Data.ChangeByName | html %]
                         </p>
                         <div class="Clear"></div>
                     </fieldset>
@@ -81,7 +81,7 @@
                 <ul class="Actions">
 [% RenderBlockStart("MenuItem") %]
                     <li>
-                        <a href="[% Env("Baselink") %][% Data.Link %]" class="[% Data.MenuClass | html %]" title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
+                        <a href="[% Env("Baselink") %][% Data.Link | Interpolate %]" class="[% Data.MenuClass | html %]" title="[% Translate(Data.Description) | html %]">[% Translate(Data.Name) | html %]</a>
                     </li>
 [% RenderBlockEnd("MenuItem") %]
                 </ul>
@@ -90,7 +90,7 @@
 
             <div class="WidgetBox SpacingTop Expanded">
                 <div class="LightRow Header">
-                    <div class="WidgetAction Toggle"><a href="#" title="[% Translate("Show or hide the content.") | html %]"><span></span></a></div>
+                    <div class="WidgetAction Toggle"><a href="#" title="[% Translate("Show or hide the content.") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a></div>
                     <h2>[% Translate("Service") | html %]: [% Data.Name | html %]</h2>
                 </div>
                 <div class="Content AutoHeight">
@@ -106,6 +106,13 @@
                             [% Translate(Data.Criticality) | html %]
                         </div>
                         <div class="Clear"></div>
+
+                        <label title="[% Translate("Comment") | html %]">[% Translate("Comment") | html %]: </label>
+                        <div class="Field">
+                            [% Translate(Data.Comment) | html %]
+                        </div>
+                        <div class="Clear"></div>
+
                     </fieldset>
                 </div>
             </div>
@@ -113,6 +120,9 @@
 [% RenderBlockStart("SLA") %]
             <div class="WidgetSimple DontPrint SpacingTop  SpacingBottomMedium">
                 <div class="Header">
+                    <div class="WidgetAction Toggle">
+                        <a href="#" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
+                    </div>
                     <h2>[% Translate("Associated SLAs") | html %]</h2>
                 </div>
                 <div class="Content">
@@ -120,6 +130,7 @@
                         <thead>
                             <tr>
                                 <th>[% Translate("SLA") | html %]</th>
+                                <th>[% Translate("Comment") | html %]</th>
                                 <th>[% Translate("Type") | html %]</th>
                                 <th>[% Translate("Changed") | html %]</th>
                             </tr>
@@ -127,14 +138,18 @@
                         <tbody>
 [% RenderBlockStart("SLARow") %]
                             <tr>
-                                <td><a class="AsBlock" href="[% Env("Baselink") %]Action=AgentITSMSLAZoom;SLAID=[% Data.SLAID | uri %]">[% Data.Name | html %]</a></td>
+                                <td>
+                                    <a class="AsBlock" href="[% Env("Baselink") %]Action=AgentITSMSLAZoom;SLAID=[% Data.SLAID | uri %]">
+                                        [% Data.Name | html %]
+                                    </a>
+                                </td>
+                                <td title="[% Data.Comment | html %]">[% Data.Comment | truncate(100) | html %]</td>
                                 <td>[% Translate(Data.Type) | html %]</td>
                                 <td>[% Data.ChangeTime | Localize("TimeLong") %]</td>
                             </tr>
 [% RenderBlockEnd("SLARow") %]
                         </tbody>
                     </table>
-
                 </div>
             </div>
 [% RenderBlockEnd("SLA") %]
@@ -144,6 +159,9 @@
                 [% Data.LinkTableStrg %]
             </div>
 [% RenderBlockEnd("LinkTableComplex") %]
+# ---
+# PS
+# ---
             <div class="Content SpacingTop">
                 <div class="ControlRow">
                     <h2>CMDB explorer</h2>
@@ -185,22 +203,9 @@
                 </div>
             </div>
 [% RenderBlockEnd("LinkGraph") %]
+# ---
+
         </div>
         <div class="Clear"></div>
     </div>
 </div>
-
-[% WRAPPER JSOnDocumentComplete %]
-<script type="text/javascript">//<![CDATA[
-
-    $('ul.Actions a.AsPopup').bind('click', function (Event) {
-        Core.UI.Popup.OpenPopup($(this).attr('href'), 'Action');
-        return false;
-    });
-
-    $('ul.Actions a.HistoryBack').bind('click', function (Event) {
-        history.back();
-        return false;
-    });
-//]]></script>
-[% END %]

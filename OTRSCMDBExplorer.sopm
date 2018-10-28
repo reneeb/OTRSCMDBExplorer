@@ -2,9 +2,9 @@
 <otrs_package version="1.0">
     <!-- GENERATED WITH OTRS::OPM::Maker::Command::sopm (1.4) -->
     <Name>OTRSCMDBExplorer</Name>
-    <Version>5.0.1</Version>
-    <Framework>5.0.x</Framework>
-    <PackageRequired Version="5.0.1">ITSMConfigurationManagement</PackageRequired>
+    <Version>6.0.1</Version>
+    <Framework>6.0.x</Framework>
+    <PackageRequired Version="6.0.1">ITSMConfigurationManagement</PackageRequired>
     <ModuleRequired Version="2.04">GraphViz</ModuleRequired>
     <Vendor>Perl-Services.de</Vendor>
     <URL>http://www.perl-services.de</URL>
@@ -17,13 +17,11 @@
         <File Permission="644" Location="Custom/Kernel/Modules/AgentITSMServiceZoom.pm" />
         <File Permission="644" Location="Custom/Kernel/Output/HTML/Standard/AgentITSMConfigItemZoom.tt" />
         <File Permission="644" Location="Custom/Kernel/Output/HTML/Standard/AgentITSMServiceZoom.tt" />
-        <File Permission="644" Location="Kernel/Config/Files/CMDBExplorer.xml" />
+        <File Permission="644" Location="Kernel/Config/Files/XML/CMDBExplorer.xml" />
         <File Permission="644" Location="Kernel/System/CMDBExplorer.pm" />
         <File Permission="644" Location="Kernel/System/CMDBExplorer/GraphVizRenderer.pm" />
         <File Permission="644" Location="Kernel/System/CMDBExplorer/ObjectWrapper.pm" />
         <File Permission="644" Location="Kernel/System/CMDBExplorer/Scope.pm" />
-        <File Permission="644" Location="OTRSCMDBExplorer.sopm.bak" />
-        <File Permission="644" Location="README.md" />
         <File Permission="644" Location="doc/en/CMDBExplorer.pdf" />
         <File Permission="644" Location="doc/en/CMDBExplorer.pod" />
     </Filelist>
