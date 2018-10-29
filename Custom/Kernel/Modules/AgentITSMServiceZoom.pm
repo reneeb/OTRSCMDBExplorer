@@ -184,6 +184,7 @@ sub Run {
 ###### OTRSCMDBExplorer ######
     my $Tracer       = $Kernel::OM->Get('Kernel::System::CMDBExplorer');
     my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
+    my $LinkObject   = $Kernel::OM->Get('Kernel::System::LinkObject');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # Get graph parameters from URI

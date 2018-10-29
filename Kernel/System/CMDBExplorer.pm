@@ -68,7 +68,7 @@ sub new {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # Get debug setting through config, overriden by parameter
-    $Self->{Debug} = $ConfigObject->{'CMDBExplorer::Debug'} || 0;
+    $Self->{Debug} = $ConfigObject->Get('CMDBExplorer::Debug') || 0;
     $Self->{Debug} = $Param{Debug} if defined $Param{Debug};
 
     return $Self;
@@ -221,7 +221,7 @@ sub SetConstraints {
                     Priority => 'error',
                     Message  => "Unknown link type '$RequestedLinkType' "
                         . "for parameter 'LinkTypes'! "
-                        . "Known types are: \n\t'" 
+                        . "Known types are: \n\t'"
                         . join("',\n\t'", sort keys %{$KnownLinkTypes})."'",
                 );
 
@@ -448,7 +448,6 @@ sub Trace {
         Debug        => $Self->{Debug},
         RootCI       => $Self->{ConfigItemID}[0],
         DisplayedCIs => $Self->{DisplayedCIs},
-        DisplayedCIs => $Self->{DisplayedCIs},
         Layout       => $Param{Layout} || 'dot',
     );
 
@@ -471,7 +470,7 @@ sub _FollowLinks {
     # Get links of current object, follow them
     my @TraceSteps = ( );
     my $IncludeInvalidObjects = $Self->{IncludeInvalidObjects};
-    my $LinkList = $Object->GetLinkList;
+    my $LinkList              = $Object->GetLinkList;
 
     LINKEDCLASS:
     for my $LinkedClass ( keys %{ $LinkList || {} } ) {
@@ -482,7 +481,7 @@ sub _FollowLinks {
 
         LINKTYPE:
         for my $LinkType ( keys %{$LinkList->{$LinkedClass} || {} } ) {
-            next LINKETYPE if !$Self->_isLinkTypeAllowed($LinkType);    # filtered?
+            next LINKTYPE if !$Self->_IsLinkTypeAllowed($LinkType);    # filtered?
 
             my $LinkDirType = $Self->{KnownLinkTypes}->{$LinkType};
             my $PosDelta    = ( $LinkDirType eq '=' ) ? 0 : 1;
@@ -497,7 +496,7 @@ sub _FollowLinks {
 
                 TARGETID:
                 for my $ID (@TargetIDs) {
-                    my $TargetObject = $Object->new(
+                    my $TargetObject = $Object->GetObject(
                         Type => $LinkedClass,
                         ID   => $ID
                     );
@@ -516,8 +515,8 @@ sub _FollowLinks {
 
                     # Filter by attributes of object
                     next TARGETID if !( $TargetObject->IsValid || $IncludeInvalidObjects );
-                    next TARGETID if !$Self->_isObjectTypeAllowed($TargetObject);
-                    next TARGETID if !$Self->_isObjectInciStateAllowed($TargetObject);
+                    next TARGETID if !$Self->_IsObjectTypeAllowed($TargetObject);
+                    next TARGETID if !$Self->_IsObjectInciStateAllowed($TargetObject);
 
                     # Link already traversed (in opposite direction)?
                     my $LinkSignature = $Object.$LinkType.$TargetObject;
@@ -565,7 +564,7 @@ sub _FollowLinks {
 
                 ID:
                 for my $ID (@SourceIDs) {
-                    my $SourceObject = $Object->new(
+                    my $SourceObject = $Object->GetObject(
                         Type => $LinkedClass,
                         ID => $ID
                     );
@@ -583,8 +582,8 @@ sub _FollowLinks {
 
                     # Filter by attributes of object
                     next ID if !( $SourceObject->IsValid || $IncludeInvalidObjects );
-                    next ID if !$Self->_isObjectTypeAllowed($SourceObject);
-                    next ID if !$Self->_isObjectInciStateAllowed($SourceObject);
+                    next ID if !$Self->_IsObjectTypeAllowed($SourceObject);
+                    next ID if !$Self->_IsObjectInciStateAllowed($SourceObject);
 
                     # Link already traversed (in opposite direction)?
                     my $LinkSignature = $SourceObject.$LinkType.$Object;
@@ -749,14 +748,14 @@ sub _ExpandConfigItemID {
 
             next CI if !$Object;
             next CI if !( $Object->IsValid || $IncludeInvalidObjects );
-            next CI if !$Self->_isObjectTypeAllowed($Object);
+            next CI if !$Self->_IsObjectTypeAllowed($Object);
 
             push (@Objects, $Object) if $Object;
         }
         else { 
 
             # All config items; load & filter
-            my $ConfigItemList        = $ConfigItemObject->ConfigItemSearch();
+            my $ConfigItemList        = $ConfigItemObject->ConfigItemSearch( UserID => 1 );
             my $IncludeInvalidObjects = $Self->{IncludeInvalidObjects};
 
             for my $ID ( @{$ConfigItemList} ) {
@@ -767,7 +766,7 @@ sub _ExpandConfigItemID {
 
                 next CI if !$Object;
                 next CI if !( $Object->IsValid || $IncludeInvalidObjects );
-                next CI if !$Self->_isObjectTypeAllowed($Object);
+                next CI if !$Self->_IsObjectTypeAllowed($Object);
 
                 push (@Objects, $Object);
             } 
@@ -778,7 +777,7 @@ sub _ExpandConfigItemID {
 } 
 
 # Private method to check if a given link type meets the current constraints
-sub _isLinkTypeAllowed {
+sub _IsLinkTypeAllowed {
     my ($Self, $LinkType) = @_;
 
     return 1 unless exists $Self->{LinkTypes};        # not filtered
@@ -798,7 +797,7 @@ sub _isLinkTypeAllowed {
 
 # Private method to check if a given object meets the current
 # type constraints
-sub _isObjectTypeAllowed {
+sub _IsObjectTypeAllowed {
     my ($Self, $Object) = @_;
 
     return 1 unless exists $Self->{ObjectTypes};        # not filtered
@@ -820,7 +819,7 @@ sub _isObjectTypeAllowed {
 
 # Private method to check if a given object meets the current 
 # incident state constraints (when following only "hot" links)
-sub _isObjectInciStateAllowed {
+sub _IsObjectInciStateAllowed {
     my ($Self, $Object) = @_;
 
     return 1 unless $Self->{TraceIncident};

@@ -84,18 +84,18 @@ is guaranteed to always return the same instance for a given
 type/ID combination.
 
     my $WrapperObject = Kernel::System::CMDBExplorer::ObjectWrapper->new(
-    %CommonObjects,
-     Debug => 0,        # optional, { 0 | 1 }
-    Type => $String        # { Service | ITSMConfigItem | FAQ }
-    ID   => $ID        # integer
+        %CommonObjects,
+        Debug => 0,        # optional, { 0 | 1 }
+        Type  => $String   # { Service | ITSMConfigItem | FAQ }
+        ID    => $ID       # integer
     );
 
 As a shortcut, objects can be created off an existing one with the 
 common objects and debug settings taken from there:
 
     my $ObjectWrapper = $AnotherObjectWrapper->new(
-    Type => $String        # { Service | ITSMConfigItem | FAQ }
-    ID   => $ID        # integer
+        Type => $String        # { Service | ITSMConfigItem | FAQ }
+        ID   => $ID        # integer
     );
 
 =cut
@@ -142,6 +142,9 @@ sub GetObject {
 
     return $Obj if $Obj;
 
+    local $Kernel::OM = Kernel::System::ObjectManager->new;
+    my $NewObj = $Kernel::OM->Get( __PACKAGE__ );
+
     # Perform deferred loading
     if ( !defined $CI_VALID_DEPLOYMENT_STATES ) {
         $CI_VALID_DEPLOYMENT_STATES = $GeneralCatalogObject->ItemList(
@@ -152,18 +155,18 @@ sub GetObject {
 
     # Load object from DB, through internal cache.
     return if !(
-        ($Type eq 'Service'        && $Self->_LoadService($ID)) ||
-        ($Type eq 'ITSMConfigItem' && $Self->_LoadITSMConfigItem($ID))
+        ($Type eq 'Service'        && $NewObj->_LoadService($ID)) ||
+        ($Type eq 'ITSMConfigItem' && $NewObj->_LoadITSMConfigItem($ID))
     );
 
     # Save to cache
-    $Self->{Key}  = $Key;
-    $Self->{Type} = $Type;
-    $Self->{ID}   = $ID;
+    $NewObj->{Key}  = $Key;
+    $NewObj->{Type} = $Type;
+    $NewObj->{ID}   = $ID;
 
-    $ObjectInstances{$Key} = $Self;
+    $ObjectInstances{$Key} = $NewObj;
 
-    return $Self;
+    return $NewObj;
 } 
 
 # Private method to load an ITSM Service into a 
@@ -346,7 +349,8 @@ sub GetLinkList {
     my $LinkList = $Self->{LinkList};
     return $LinkList if $LinkList;
 
-    my $LinkObject = $Kernel::OM->Get('Kernel::System::LinkObject');
+    my $LinkObject    = $Kernel::OM->Get('Kernel::System::LinkObject');
+    my $ServiceObject = $Kernel::OM->Get('Kernel::System::Service');
 
     # Load from DB, store in object
     $LinkList = $LinkObject->LinkList(
@@ -361,13 +365,13 @@ sub GetLinkList {
         # Are we child of another service?
         if ($Self->{Name} ne $Self->{ShortName}) {
             my $ParentName = substr( $Self->{Name}, 0, -(2+length ($Self->{ShortName})) );
-            my $ParentID   = $Self->{ServiceObject}->ServiceLookup(Name => $ParentName);
+            my $ParentID   = $ServiceObject->ServiceLookup(Name => $ParentName);
 
             $LinkList->{Service}->{ComposedOf}->{Source}->{$ParentID}++;
         }
 
         # Do we ourselves have children?
-        my @ServiceIDs = $Self->{ServiceObject}->ServiceSearch(
+        my @ServiceIDs = $ServiceObject->ServiceSearch(
             Name   => $Self->{Name}."::%",
             Limit  => 100,
             UserID => 1,

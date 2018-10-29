@@ -28,6 +28,7 @@ use strict;
 use warnings;
 
 use GraphViz;
+use List::Util qw(first);
 
 our @ObjectDependencies = qw(
     Kernel::Config
@@ -88,12 +89,12 @@ sub new {
 sub Init {
     my ($Self, %Param) = @_;
 
-    $Self->{Debug}        = $Param{Debug} || 0;
+    $Self->{Debug}        = $Param{Debug} || 1;
     $Self->{RootCI}       = $Param{RootCI} || 0;
     $Self->{DisplayedCIs} = $Param{DisplayedCIs};
     $Self->{Layout}       = $Param{Layout} || 'dot';
 
-    return 1;
+    return $Self;
 }
 
 ###  M e t h o d s  ####################################################
@@ -105,20 +106,20 @@ Renders the graph given by C<$TraceSteps> through graphviz with
 the built-in mapping from objects & links to graphical elements. 
 
     $TraceSteps = [ 
-    { 
-        Level       => $Level,          # recursion level
-        LinkType    => $LinkType,       # type of link to object
-        LinkDir     => 'in',            # 'out' | 'in' | '' (=root)
-        LinkDirType => $LinkDirType,    # '>' | '='
-        Object1     => $Object,         # object at "this" end of link
-        Object2     => $TargetObject,   # object at "other" end of link
-        Position    => $RelPosition,    # relative pos. in dep. chain
-        Visited     => $Visited,        # flag if ob has been visited before
-    },
-    {
+        { 
+            Level       => $Level,          # recursion level
+            LinkType    => $LinkType,       # type of link to object
+            LinkDir     => 'in',            # 'out' | 'in' | '' (=root)
+            LinkDirType => $LinkDirType,    # '>' | '='
+            Object1     => $Object,         # object at "this" end of link
+            Object2     => $TargetObject,   # object at "other" end of link
+            Position    => $RelPosition,    # relative pos. in dep. chain
+            Visited     => $Visited,        # flag if ob has been visited before
+        },
+        {
+            ...
+        }, 
         ...
-    }, 
-    ...
     ];
 
     # Object-to-scope mapping (see Kernel::System::CMDBExplorer::Scope)
@@ -263,7 +264,7 @@ sub _RenderObject {
             $URL .= $ID;
             $Tooltip .= " (Root CI)";
         }
-        elsif ( $ID ~~  @{ $Self->{DisplayedCIs} } ) {
+        elsif ( first { $_ eq $ID }  @{ $Self->{DisplayedCIs} } ) {
             # Clicking on the node will remove it from the graph
             $Attrs{fillcolor} = $Self->{GraphOptions}->{DisplayedNodeColor} || 'LightSteelBlue1';
             $URL .= $Self->{RootCI};
@@ -311,7 +312,7 @@ sub _RenderLink {
 
     my %Attrs;
 
-    my %Opts = @{ $Self->{GraphOptions} || {} };
+    my %Opts = %{ $Self->{GraphOptions} || {} };
 
     # Set default link attributes
     $Attrs{style}     = $Opts{LinkStyles}->{$Link->{LinkType}} || 'filled';
@@ -327,7 +328,8 @@ sub _RenderLink {
             if ( $Link->{$Node}->GetCurInciState eq 'Incident' ) {
                 $Attrs{color} = $InciStateColors{Incident};
                 last;
-            } elsif ( $Link->{$Node}->GetCurInciState eq 'Warning' ) {
+            }
+            elsif ( $Link->{$Node}->GetCurInciState eq 'Warning' ) {
                 $Attrs{color} = $InciStateColors{Warning};
             }
         }
@@ -369,8 +371,8 @@ http://www.gnu.org/licenses/agpl-3.0.html.
 
 =head1 AUTHOR
 
-info@perl-services.de
-cyrille.bollu@belnet.be
+info@perl-services.de,
+cyrille.bollu@belnet.be,
 dietmar.berg@thalesgroup.com
 
 =cut
