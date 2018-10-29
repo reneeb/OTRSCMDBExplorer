@@ -176,7 +176,8 @@ to include in the output or not.
 
 =head1 TERMS AND CONDITIONS
 
- Copyright (C) 2014- Belnet, http://www.belnet.be E<10>
+ Copyright (C) 2018- Perl-Services.de, https://perl-services.de
+ Copyright (C) 2014-2018 Belnet, http://www.belnet.be E<10>
  Copyright (C) 2011-2014 Thales Austria GmbH, http://www.thalesgroup.com/
 
 This software comes with ABSOLUTELY NO WARRANTY and WITHOUT ANY SUPPORT. 
@@ -188,6 +189,7 @@ http://www.gnu.org/licenses/agpl-3.0.html.
 
 =head1 AUTHOR 
 
+ info@perl-services.de
  cyrille.bollu@belnet.be 
  dietmar.berg@thalesgroup.com
 
