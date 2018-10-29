@@ -15,8 +15,8 @@
         <File Permission="644" Location="COPYING-OTRSCMDBExplorer" />
         <File Permission="644" Location="Custom/Kernel/Modules/AgentITSMConfigItemZoom.pm" />
         <File Permission="644" Location="Custom/Kernel/Modules/AgentITSMServiceZoom.pm" />
-        <File Permission="644" Location="Custom/Kernel/Output/HTML/Standard/AgentITSMConfigItemZoom.tt" />
-        <File Permission="644" Location="Custom/Kernel/Output/HTML/Standard/AgentITSMServiceZoom.tt" />
+        <File Permission="644" Location="Custom/Kernel/Output/HTML/Templates/Standard/AgentITSMConfigItemZoom.tt" />
+        <File Permission="644" Location="Custom/Kernel/Output/HTML/Templates/Standard/AgentITSMServiceZoom.tt" />
         <File Permission="644" Location="Kernel/Config/Files/XML/CMDBExplorer.xml" />
         <File Permission="644" Location="Kernel/System/CMDBExplorer.pm" />
         <File Permission="644" Location="Kernel/System/CMDBExplorer/GraphVizRenderer.pm" />
@@ -25,6 +25,7 @@
         <File Permission="644" Location="doc/en/CMDBExplorer.pdf" />
         <File Permission="644" Location="doc/en/CMDBExplorer.pod" />
     </Filelist>
+    <ChangeLog Version="6.0.1" Date="2018-10-28 07:58:00"><![CDATA[ Update for OTRS6 ]]></ChangeLog>
     <ChangeLog Version="4.0.4" Date="2015-05-13 16:39:00"><![CDATA[ fixed a bug where ITSM::Core::IncidentLinkTypeDirection is not a hash ]]></ChangeLog>
     <ChangeLog Version="4.0.3" Date="2015-05-13 14:07:00"><![CDATA[ Adapted the Impact Analysis feature for the new ITSM::Core::IncidentLinkTypeDirection SysConfig setting ]]></ChangeLog>
     <ChangeLog Version="4.0.2" Date="2015-05-08 16:35:00"><![CDATA[ Fixed some typos introduced in version 4.0.1 ]]></ChangeLog>
